@@ -1,0 +1,29 @@
+    version: '3.8' # Specify the Compose file format version
+
+    services:
+      db:
+        image: mysql:8.0
+        restart: unless-stopped
+        environment:
+          MYSQL_ROOT_PASSWORD: password@123
+          MYSQL_DATABASE: ems
+          MYSQL_USER: emsuser
+          MYSQL_PASSWORD: emspass
+        volumes:
+          - db-data:/var/lib/mysql
+        healthcheck:
+          test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+          interval: 5s
+          timeout: 5s
+          retries: 10
+      frontend:
+        image: emsfe # Replace with your first image name and tag
+        ports:
+          - "5174:5174" # Example: Map host port 8000 to container port 80
+        build: ./ems-frontend
+
+      backend:
+        image: emsbe # Replace with your second image name and tag
+        ports:
+          - "8082:8082" # Example: Map host port 9000 to container port 90
+        build: ./ems-backend # Example: Mount a local directory as a volume
